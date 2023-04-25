@@ -1,6 +1,6 @@
 # Recipe App
 
-The place for all your recipes.
+The place for all your recipes. See it in action at https://sb-capstone2.vercel.app/
 
 ## Overview
 
