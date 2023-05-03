@@ -10,7 +10,7 @@ const router = new express.Router();
  * GET /recipes/search/:searchTerm
  * expects req.headers.authorization to be a valid token obtained from /auth/register or /auth/token
  * but the search will still work without a valid token, only returning public recipes in that case
- * returns { recipes: [{ id, ownerId, publiclyShared, name, description }, ...] }
+ * returns { recipes: [{ id, ownerId, publiclyShared, name, description, imageUrl }, ...] }
  */
 router.get("/search/:searchTerm", ensureLoggedIn, async function (req, res, next) {
     try {
@@ -25,7 +25,7 @@ router.get("/search/:searchTerm", ensureLoggedIn, async function (req, res, next
 
 /** Get list of own recipes
  * GET /recipes/my
- * returns { recipes: [{ id, ownerId, publiclyShared, name, description }, ...] }
+ * returns { recipes: [{ id, ownerId, publiclyShared, name, description, imageUrl }, ...] }
  * expects req.headers.authorization to be a valid token obtained from /auth/register or /auth/token
  */
 router.get("/my", ensureLoggedIn, async function (req, res, next) {
@@ -40,7 +40,7 @@ router.get("/my", ensureLoggedIn, async function (req, res, next) {
 
 /** Get list of public recipes
  * GET /recipes/public
- * returns { recipes: [{ id, ownerId, publiclyShared, name, description }, ...] }
+ * returns { recipes: [{ id, ownerId, publiclyShared, name, description, imageUrl }, ...] }
  * no authorization required
  */
 router.get("/public", async function (req, res, next) {
@@ -56,7 +56,7 @@ router.get("/public", async function (req, res, next) {
  * GET /recipes/:id
  * expects req.headers.authorization to be a valid token obtained from /auth/register or /auth/token,
  * but only if the recipe is private; if it's publiclyShared, no user info is needed
- * returns { recipe: { id, ownerId, publiclyShared, name, description, ingredients, directions } }
+ * returns { recipe: { id, ownerId, publiclyShared, name, description, ingredients, directions, imageUrl } }
  */
 router.get("/:id", async function (req, res, next) {
     try {
@@ -72,8 +72,8 @@ router.get("/:id", async function (req, res, next) {
 /** Add new recipe
  * POST /recipes/
  * expects req.headers.authorization to be a valid token obtained from /auth/register or /auth/token
- * expects { publiclyShared, name, description, ingredients, directions }
- * returns { recipe: { id, ownerId, publiclyShared, name, description, ingredients, directions } }
+ * expects { publiclyShared, name, description, ingredients, directions, imageUrl }
+ * returns { recipe: { id, ownerId, publiclyShared, name, description, ingredients, directions, imageUrl } }
  */
 router.post("/", ensureLoggedIn, validateNewRecipeSchema, async function (req, res, next) {
     try {
@@ -88,8 +88,8 @@ router.post("/", ensureLoggedIn, validateNewRecipeSchema, async function (req, r
 /** Update existing recipe
  * PATCH /recipes/:id
  * expects req.headers.authorization to be a valid token obtained from /auth/register or /auth/token
- * expects { publiclyShared, name, description, ingredients, directions }, but any not included will be left unchanged in the database
- * returns { recipe: { id, ownerId, publiclyShared, name, description, ingredients, directions } }
+ * expects { publiclyShared, name, description, ingredients, directions, imageUrl }, but any not included will be left unchanged in the database
+ * returns { recipe: { id, ownerId, publiclyShared, name, description, ingredients, directions, imageUrl } }
  */
 router.patch("/:id", ensureLoggedIn, validateEditRecipeSchema, async function (req, res, next) {
     try {
