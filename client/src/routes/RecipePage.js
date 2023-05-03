@@ -54,7 +54,7 @@ export default function RecipePage({copyRecipe}) {
                             <p>{recipe.description}</p>
                         </div>
                         <div className="ms-auto">
-                            <img src={recipe.image} alt={recipe.name} style={{width: "200px", height: "200px", "object-fit": "cover"}} />
+                            <img src={recipe.imageUrl} alt={recipe.name} style={{width: "200px", height: "200px", "object-fit": "cover"}} />
                         </div>
                     </Stack>
                     {currentUser && currentUser.username === recipe.ownerName && (
