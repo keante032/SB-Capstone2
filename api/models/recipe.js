@@ -10,7 +10,7 @@ class Recipe {
      * This is done by finding the user in the user table to get the user_id
      * Then we insert the recipe into the recipes table
      */
-    static async add(username, { publiclyShared=false, name, description, ingredients, directions }) {
+    static async add(username, { publiclyShared=false, name, description, ingredients, directions, imageUrl }) {
         // find user in database
         const userResult = await db.query(
             `SELECT id, username
@@ -27,10 +27,10 @@ class Recipe {
         // add new recipe to database, then return recipe object
         const result = await db.query(
             `INSERT INTO recipes
-            (owner_id, publicly_shared, name, description, ingredients, directions)
-            VALUES ($1, $2, $3, $4, $5::json, $6::json)
-            RETURNING id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description, ingredients, directions`,
-            [user.id, publiclyShared, name, description, ingredients, directions]
+            (owner_id, publicly_shared, name, description, ingredients, directions, image_url)
+            VALUES ($1, $2, $3, $4, $5::json, $6::json, $7)
+            RETURNING id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description, ingredients, directions, image_url AS "imageUrl"`,
+            [user.id, publiclyShared, name, description, ingredients, directions, imageUrl]
         );
         const recipe = result.rows[0];
 
@@ -52,9 +52,9 @@ class Recipe {
 
         // find recipes in database, do not return ingredients or directions
         const result = await db.query(
-            `SELECT id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description
-            FROM recipes
-            WHERE owner_id = $1`,
+            `SELECT r.id, r.owner_id AS "ownerId", u.username AS "ownerName", r.publicly_shared AS "publiclyShared", r.name, r.description, r.image_url AS "imageUrl"
+            FROM recipes AS "r" JOIN users AS "u" ON r.owner_id = u.id
+            WHERE r.owner_id = $1`,
             [user.id]
         );
         const recipes = result.rows;
@@ -68,9 +68,9 @@ class Recipe {
     static async getPublic() {
         // find recipes in database, do not return ingredients or directions
         const result = await db.query(
-            `SELECT id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description
-            FROM recipes
-            WHERE publicly_shared = true`
+            `SELECT r.id, r.owner_id AS "ownerId", u.username AS "ownerName", r.publicly_shared AS "publiclyShared", r.name, r.description, r.image_url AS "imageUrl"
+            FROM recipes AS "r" JOIN users AS "u" ON r.owner_id = u.id
+            WHERE r.publicly_shared = true`
         );
         const recipes = result.rows;
 
@@ -92,32 +92,32 @@ class Recipe {
 
         // find recipes in database, do not return ingredients or directions
         const result = await db.query(
-            `SELECT id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description
-            FROM recipes
-            WHERE name ILIKE $1
-            OR description ILIKE $1
-            OR ingredients::json#>>'{0,item}' ILIKE $1
-            OR ingredients::json#>>'{1,item}' ILIKE $1
-            OR ingredients::json#>>'{2,item}' ILIKE $1
-            OR ingredients::json#>>'{3,item}' ILIKE $1
-            OR ingredients::json#>>'{4,item}' ILIKE $1
-            OR ingredients::json#>>'{5,item}' ILIKE $1
-            OR ingredients::json#>>'{6,item}' ILIKE $1
-            OR ingredients::json#>>'{7,item}' ILIKE $1
-            OR ingredients::json#>>'{8,item}' ILIKE $1
-            OR ingredients::json#>>'{9,item}' ILIKE $1
-            OR ingredients::json#>>'{10,item}' ILIKE $1
-            OR ingredients::json#>>'{11,item}' ILIKE $1
-            OR ingredients::json#>>'{12,item}' ILIKE $1
-            OR ingredients::json#>>'{13,item}' ILIKE $1
-            OR ingredients::json#>>'{14,item}' ILIKE $1
-            OR ingredients::json#>>'{15,item}' ILIKE $1
-            OR ingredients::json#>>'{16,item}' ILIKE $1
-            OR ingredients::json#>>'{17,item}' ILIKE $1
-            OR ingredients::json#>>'{18,item}' ILIKE $1
-            OR ingredients::json#>>'{19,item}' ILIKE $1
-            OR ingredients::json#>>'{20,item}' ILIKE $1
-            OR directions::text ILIKE $1`,
+            `SELECT r.id, r.owner_id AS "ownerId", u.username AS "ownerName", r.publicly_shared AS "publiclyShared", r.name, r.description, r.image_url AS "imageUrl"
+            FROM recipes AS "r" JOIN users AS "u" ON r.owner_id = u.id
+            WHERE r.name ILIKE $1
+            OR r.description ILIKE $1
+            OR r.ingredients::json#>>'{0,item}' ILIKE $1
+            OR r.ingredients::json#>>'{1,item}' ILIKE $1
+            OR r.ingredients::json#>>'{2,item}' ILIKE $1
+            OR r.ingredients::json#>>'{3,item}' ILIKE $1
+            OR r.ingredients::json#>>'{4,item}' ILIKE $1
+            OR r.ingredients::json#>>'{5,item}' ILIKE $1
+            OR r.ingredients::json#>>'{6,item}' ILIKE $1
+            OR r.ingredients::json#>>'{7,item}' ILIKE $1
+            OR r.ingredients::json#>>'{8,item}' ILIKE $1
+            OR r.ingredients::json#>>'{9,item}' ILIKE $1
+            OR r.ingredients::json#>>'{10,item}' ILIKE $1
+            OR r.ingredients::json#>>'{11,item}' ILIKE $1
+            OR r.ingredients::json#>>'{12,item}' ILIKE $1
+            OR r.ingredients::json#>>'{13,item}' ILIKE $1
+            OR r.ingredients::json#>>'{14,item}' ILIKE $1
+            OR r.ingredients::json#>>'{15,item}' ILIKE $1
+            OR r.ingredients::json#>>'{16,item}' ILIKE $1
+            OR r.ingredients::json#>>'{17,item}' ILIKE $1
+            OR r.ingredients::json#>>'{18,item}' ILIKE $1
+            OR r.ingredients::json#>>'{19,item}' ILIKE $1
+            OR r.ingredients::json#>>'{20,item}' ILIKE $1
+            OR r.directions::text ILIKE $1`,
             [`%${searchTerm}%`]
         );
         const recipes = result.rows;
@@ -136,9 +136,9 @@ class Recipe {
     static async get(username, recipeId) {
         // find recipe in database
         const result = await db.query(
-            `SELECT id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description, ingredients, directions
-            FROM recipes
-            WHERE id = $1`,
+            `SELECT r.id, r.owner_id AS "ownerId", u.username AS "ownerName", r.publicly_shared AS "publiclyShared", r.name, r.description, r.ingredients, r.directions, r.image_url AS "imageUrl"
+            FROM recipes AS "r" JOIN users AS "u" ON r.owner_id = u.id
+            WHERE r.id = $1`,
             [recipeId]
         );
         const recipe = result.rows[0];
@@ -146,15 +146,7 @@ class Recipe {
         // if recipe is not found, throw error
         if (!recipe) throw new NotFoundError(`No recipe found with id ${recipeId}`);
 
-        const nameResult = await db.query(
-            `SELECT username
-            FROM users
-            WHERE id = $1`,
-            [recipe.ownerId]
-        );
-        recipe.ownerName = nameResult.rows[0].username;
-
-        if (!recipe.publiclyShared) {
+        if (!recipe.publiclyShared && recipe.ownerName !== username) {
             // find user in database
             const userResult = await db.query(
                 `SELECT id, username, is_admin AS "isAdmin"
@@ -164,8 +156,8 @@ class Recipe {
             );
             const user = userResult.rows[0];
 
-            // check if user is not an admin and not the owner
-            if (!user || (!user.isAdmin && recipe.ownerId !== user.id)) {
+            // check if user is not an admin
+            if (!user.isAdmin) {
                 throw new UnauthorizedError();
             }
         }
@@ -176,7 +168,7 @@ class Recipe {
     /**
      * Edit a recipe in the database
      */
-    static async edit(username, recipeId, { publiclyShared=null, name=null, description=null, ingredients=null, directions=null }) {
+    static async edit(username, recipeId, { publiclyShared=null, name=null, description=null, ingredients=null, directions=null, imageUrl=null }) {
         // find user in database
         const userResult = await db.query(
             `SELECT id, username
@@ -208,10 +200,10 @@ class Recipe {
         // edit recipe in database, modifying only the fields that are passed in while leaving the others unchanged
         const editResult = await db.query(
             `UPDATE recipes
-            SET publicly_shared = COALESCE($1, publicly_shared), name = COALESCE($2, name), description = COALESCE($3, description), ingredients = COALESCE($4, ingredients), directions = COALESCE($5, directions)
-            WHERE id = $6
-            RETURNING id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description, ingredients, directions`,
-            [publiclyShared, name, description, ingredients, directions, recipeId]
+            SET publicly_shared = COALESCE($1, publicly_shared), name = COALESCE($2, name), description = COALESCE($3, description), ingredients = COALESCE($4, ingredients), directions = COALESCE($5, directions), image_url = COALESCE($6, image_url)
+            WHERE id = $7
+            RETURNING id, owner_id AS "ownerId", publicly_shared AS "publiclyShared", name, description, ingredients, directions, image_url AS "imageUrl"`,
+            [publiclyShared, name, description, ingredients, directions, imageUrl, recipeId]
         );
         const editedRecipe = editResult.rows[0];
 
