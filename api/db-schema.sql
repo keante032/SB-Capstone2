@@ -13,5 +13,6 @@ CREATE TABLE recipes (
     name TEXT NOT NULL,
     description TEXT,
     ingredients JSONB NOT NULL,
-    directions JSONB NOT NULL
+    directions JSONB NOT NULL,
+    image_url TEXT
 );
