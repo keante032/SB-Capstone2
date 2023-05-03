@@ -35,7 +35,8 @@ export default function RecipePage({copyRecipe}) {
             publiclyShared: false,
             description: recipe.description,
             ingredients: recipe.ingredients,
-            directions: recipe.directions
+            directions: recipe.directions,
+            imageUrl: recipe.imageUrl
         });
         if (result.success) {
             navigate("/user/dashboard");

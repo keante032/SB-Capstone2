@@ -40,7 +40,7 @@ export default function Dashboard() {
                         {recipes && recipes.map(recipe => (
                             <Col>
                                 <Card key={recipe.id} className="h-100">
-                                    <Card.Img variant="top" src={recipe.imageUrl} />
+                                    <Card.Img variant="top" src={recipe.imageUrl} style={{height: "200px", "object-fit": "cover"}} />
                                     <Card.Body>
                                         <Card.Title>{recipe.name}</Card.Title>
                                         <Card.Text>{recipe.description}</Card.Text>
