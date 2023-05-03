@@ -12,7 +12,8 @@ export default function RecipeNew({addRecipe}) {
         publiclyShared: false,
         description: "",
         ingredients: "",
-        directions: ""
+        directions: "",
+        imageUrl: ""
     });
     const [formErrors, setFormErrors] = useState([]);
 
@@ -60,6 +61,10 @@ export default function RecipeNew({addRecipe}) {
                         </Form.Group>
                         <Form.Group controlId="publiclyShared">
                             <Form.Check type="checkbox" name="publiclyShared" label="Share publicly?" onChange={handleCheck} />
+                        </Form.Group>
+                        <Form.Group controlId="imageUrl">
+                            <Form.Label>Image</Form.Label>
+                            <Form.Control type="text" name="imageUrl" placeholder="https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg" onChange={handleChange} />
                         </Form.Group>
                         <Form.Group controlId="description">
                             <Form.Label>Description</Form.Label>

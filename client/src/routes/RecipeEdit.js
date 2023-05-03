@@ -14,7 +14,8 @@ export default function RecipeEdit({editRecipe, deleteRecipe}) {
         publiclyShared: true,
         description: "",
         ingredients: "",
-        directions: ""
+        directions: "",
+        imageUrl: ""
     });
     const [formErrors, setFormErrors] = useState([]);
 
@@ -28,7 +29,8 @@ export default function RecipeEdit({editRecipe, deleteRecipe}) {
                 publiclyShared: result.publiclyShared,
                 description: result.description,
                 ingredients: result.ingredients.join("\n"),
-                directions: result.directions.join("\n")
+                directions: result.directions.join("\n"),
+                imageUrl: result.imageUrl
             });
         };
 
@@ -92,6 +94,10 @@ export default function RecipeEdit({editRecipe, deleteRecipe}) {
                         </Form.Group>
                         <Form.Group controlId="publiclyShared">
                             <Form.Check type="checkbox" name="publiclyShared" label="Share publicly?" onChange={handleCheck} checked={formData.publiclyShared} />
+                        </Form.Group>
+                        <Form.Group controlId="imageUrl">
+                            <Form.Label>Image</Form.Label>
+                            <Form.Control type="text" name="imageUrl" onChange={handleChange} defaultValue={formData.imageUrl} />
                         </Form.Group>
                         <Form.Group controlId="description">
                             <Form.Label>Description</Form.Label>
