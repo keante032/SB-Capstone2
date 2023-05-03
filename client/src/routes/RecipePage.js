@@ -1,4 +1,4 @@
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col, Button, Stack } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
@@ -47,9 +47,16 @@ export default function RecipePage({copyRecipe}) {
             <Row>
                 <Col xs={1} md={2}></Col>
                 <Col xs={10} md={6}>
-                    <h1>{recipe.name}</h1>
-                    <h4>by {recipe.ownerName}</h4>
-                    <p>{recipe.description}</p>
+                    <Stack direction="horizontal">
+                        <div>
+                            <h1>{recipe.name}</h1>
+                            <h4>by {recipe.ownerName}</h4>
+                            <p>{recipe.description}</p>
+                        </div>
+                        <div className="ms-auto">
+                            <img src={recipe.image} alt={recipe.name} style={{width: "200px", height: "200px", "object-fit": "cover"}} />
+                        </div>
+                    </Stack>
                     {currentUser && currentUser.username === recipe.ownerName && (
                         <LinkContainer to={`/recipes/edit/${id}`}>
                             <Button variant="primary">Edit Recipe</Button>
