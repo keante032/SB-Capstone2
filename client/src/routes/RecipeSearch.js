@@ -45,7 +45,7 @@ export default function RecipeSearch() {
                 <Col xs={10} md={6}>
                     <Row xs={2} sm={3} className="g-4">
                         {recipes.map(recipe => (
-                            <Col>
+                            <Col key={`col-${recipe.id}`}>
                                 <Card key={recipe.id} className="h-100">
                                     <Card.Img variant="top" src={recipe.imageUrl} style={{height: "200px", "object-fit": "cover"}} />
                                     <Card.Body>
